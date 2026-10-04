@@ -1,0 +1,42 @@
+name: CP dist to rute Didectry
+
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      - name: CP
+        run: |
+          cp ./dist/* ./
+          # */
+          
+      - name: Push dist to gh-pages
+        run: |
+          
+          echo "distフォルダに移動してGitを初期化し、強制プッシュを実行"
+          echo "=== 変更をリポジトリにプッシュ中... ==="
+          
+          # GitHub Actions用の共通Botアカウントを設定
+          git config --local user.email "github-actions[bot]@://github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # 変更がある場合のみコミットしてプッシュ
+          git add ./dist*
+          if ! git diff-index --quiet HEAD --; then
+            git commit -m "chore: update extensions-v0.json path to local reference"
+            git push origin HEAD
+            echo "変更を保存しました！"
+          else
+            echo "変更はありませんでした。"
+          fi
